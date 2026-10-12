@@ -18,17 +18,20 @@ import {
   CategorySchema,
 } from './validator.pipe.js';
 import { ZodValidationPipe } from '../lib/zod-validation-pipe.js';
+import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) { }
 
   @Get()
+  @AllowAnonymous()
   findAll() {
     return this.categoriesService.findAll();
   }
 
   @Get(':slug')
+  @AllowAnonymous()
   findOne(@Param('slug') slug: string) {
     return this.categoriesService.findOne(slug);
   }
