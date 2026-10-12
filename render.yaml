@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: pocketpenny-backend
+    runtime: node
+    buildCommand: bun install --frozen-lockfile && bun run build
+    startCommand: bun run start:prod
