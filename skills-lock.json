@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "better-auth-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/best-practices/SKILL.md",
+      "computedHash": "f35281e7a0c07b3fd3c4e96c7833dafb294a3a8662cb68a8544f4225008d6568"
+    },
+    "create-auth": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/create-auth/SKILL.md",
+      "computedHash": "d101953fda9452eb4e59d4eb50aa829c1961cdd7d0587d26a2b1871abe885e07"
+    },
+    "drizzle": {
+      "source": "lobehub/lobehub",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/drizzle/SKILL.md",
+      "computedHash": "a51a3da4e421ae171d1b3aea0953cd63241b48a5f2fff59ad7ed0f6ff6d9a459"
+    },
+    "email-and-password-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/emailAndPassword/SKILL.md",
+      "computedHash": "ac9f9b0a549390f157ec62f5421a0bc90ac622c7e425af13155953847e0b68ea"
+    },
+    "nestjs-best-practices": {
+      "source": "Kadajett/agent-nestjs-skills",
+      "sourceType": "github",
+      "skillPath": "skills/nestjs-best-practices/SKILL.md",
+      "computedHash": "29c326e77d1462ed9526996acae5da0cf4003146982abc8c67378f5dbad6b181"
+    }
+  }
+}
