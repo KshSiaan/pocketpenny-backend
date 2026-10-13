@@ -33,6 +33,7 @@
     "@nestjs/swagger": "^12.0.2",
     "@thallesp/nestjs-better-auth": "^2.8.0",
     "@types/pg": "^8.23.1",
+    "bad-words": "^4.1.5",
     "better-auth": "^1.7.7",
     "dotenv": "^18.0.7",
     "drizzle-orm": "^1.0.0-rc.4",

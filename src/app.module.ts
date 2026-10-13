@@ -7,6 +7,9 @@ import { auth } from "./lib/auth.js"; // Your Better Auth instance
 import { UserModule } from './user/user.module.js';
 import { CategoriesModule } from './categories/categories.module.js';
 import { DatabaseModule } from './database/database.module.js';
+import { JobsModule } from './jobs/jobs.module.js';
+import { BidsModule } from './bids/bids.module.js';
+
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -31,7 +34,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     UserModule,
     CategoriesModule,
     DatabaseModule,
-
+    JobsModule,
+    BidsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
