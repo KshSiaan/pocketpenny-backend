@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { JobsService } from './jobs.service.js';
 import { AllowAnonymous, OptionalAuth, Session, type UserSession } from '@thallesp/nestjs-better-auth';
 import { ZodValidationPipe } from '../lib/zod-validation-pipe.js';
@@ -30,6 +30,13 @@ export class JobsController {
   @Delete(':id')
   deleteJob(@Session() session: UserSession, @Param('id') id: string) {
     return this.jobsService.deleteJob(session.user, id);
+  }
+
+  @Patch(':id')
+  updateJob(@Session() session: UserSession, @Param('id') id: string,
+    @Body(new ZodValidationPipe(JobSchema.partial()))
+    body: Partial<JobDto>) {
+    return this.jobsService.updateJob(session.user, id, body);
   }
 
 
