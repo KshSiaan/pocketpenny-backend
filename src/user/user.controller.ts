@@ -4,7 +4,7 @@ import { AllowAnonymous, OptionalAuth, Session, type UserSession } from '@thalle
 @Controller('users')
 export class UserController {
   @Get('me')
-  async getProfile(@Session() session:UserSession) {
+  async getProfile(@Session() session: UserSession) {
     return { user: session.user };
   }
 

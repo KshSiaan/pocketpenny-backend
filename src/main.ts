@@ -15,8 +15,8 @@ async function createApp() {
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new StandardSchemaValidationPipe());
   const config = new DocumentBuilder()
-    .setTitle("Microjob API")
-    .setDescription("Microjob platform API documentation")
+    .setTitle("Pocketpenny API documentation")
+    .setDescription("List of all available endpoints and their request/response schemas except BetterAuth endpoints")
     .setVersion("1.0")
     .addBearerAuth()
     .build();

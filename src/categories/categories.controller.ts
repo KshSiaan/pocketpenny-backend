@@ -18,7 +18,7 @@ import {
   CategorySchema,
 } from './validator.pipe.js';
 import { ZodValidationPipe } from '../lib/zod-validation-pipe.js';
-import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
+import { AllowAnonymous, Roles } from '@thallesp/nestjs-better-auth';
 
 @Controller('categories')
 export class CategoriesController {
@@ -37,6 +37,7 @@ export class CategoriesController {
   }
 
   @Post()
+  @Roles(["admin"])
   @UseInterceptors(FileInterceptor('icon'))
   createCategory(
     @UploadedFile(new ZodValidationPipe(CategorySchema.shape.icon))
@@ -48,11 +49,13 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @Roles(["admin"])
   deleteCategory(@Param('id') id: string) {
     return this.categoriesService.deleteCategory(id);
   }
 
   @Put(':id')
+  @Roles(["admin"])
   @UseInterceptors(FileInterceptor('icon'))
   updateCategory(
     @Param('id') id: string,
