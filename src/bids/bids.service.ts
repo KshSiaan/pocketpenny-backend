@@ -49,7 +49,7 @@ export class BidsService {
         } catch (error: any) {
             throw new InternalServerErrorException('Failed to create bid', { "description": error instanceof Error ? error.message : String(error) });
         }
-
-
     }
+
+
 }
