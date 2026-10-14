@@ -20,6 +20,9 @@ export class JobEditPolicy {
         if (!job) {
             return { canEdit: false, code: 'NOT_FOUND', reason: 'Job not found' };
         }
+        if (user.role === 'admin') {
+            return { canEdit: true };
+        }
         if (job.author_id !== user.id) {
             return { canEdit: false, code: 'NOT_OWNER', reason: 'You are not the owner of this job' };
         }

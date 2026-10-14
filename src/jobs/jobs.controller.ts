@@ -39,6 +39,4 @@ export class JobsController {
     return this.jobsService.updateJob(session.user, id, body);
   }
 
-
-
 }

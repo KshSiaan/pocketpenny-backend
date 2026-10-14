@@ -19,7 +19,7 @@ export class BidsController {
     @Body(new ZodValidationPipe(BidSchema))
     body: BidDto
   ) {
-    return this.bidsService.createBid(session.user, body);
+    return this.bidsService.createBid(session?.user, body);
   }
 
 }

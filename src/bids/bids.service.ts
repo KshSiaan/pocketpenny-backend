@@ -6,34 +6,29 @@ import { UserSession } from '@thallesp/nestjs-better-auth';
 import { BidDto } from './validator.pipe.js';
 import { jobs } from '../db/schema/job-schema.js';
 import { eq, and } from 'drizzle-orm';
+import { BidEditPolicy } from './bids.privacy.js';
+
 @Injectable()
 export class BidsService {
-    constructor(@Inject(DRIZZLE) private readonly db: Database) { }
+    constructor(
+        @Inject(DRIZZLE) private readonly db: Database,
+        private readonly bidEditPolicy: BidEditPolicy
+    ) { }
 
     findAll(limit = 50, offset = 0) {
         return this.db.select().from(bids).limit(limit).offset(offset);
     }
 
     async createBid(user: UserSession['user'], body: BidDto) {
-        const selectedJob = await this.db.select().from(jobs).where(eq(jobs.id, body.job_reference)).execute();
+        const selectedJob = await this.db.select().from(jobs).where(eq(jobs.id, body.job_reference)).limit(1).execute();
 
         if (!selectedJob || selectedJob.length === 0) {
             throw new Error('Job not found');
         }
 
-        if (selectedJob[0].author_id === user?.id) {
-            throw new NotAcceptableException('You cannot bid on your own job');
-        }
-
-        if (selectedJob[0].status !== 'open') {
-            throw new NotAcceptableException('You cannot bid on a job that is not open');
-        }
-
-        const [checkSameBid] = await this.db.select().from(bids).where(and(eq(bids.job_reference, body.job_reference), eq(bids.applicant, user?.id))).execute();
-
-        if (checkSameBid) {
-            throw new NotAcceptableException('You have already placed a bid on this job');
-        }
+        this.bidEditPolicy.checkToCreate(selectedJob[0], user);
+        const [sameBid] = await this.db.select().from(bids).where(and(eq(bids.job_reference, body.job_reference), eq(bids.applicant, user?.id))).execute();
+        this.bidEditPolicy.checkSameBid(sameBid)
 
         const newBid = {
             ...body,
