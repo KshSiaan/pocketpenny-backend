@@ -46,5 +46,40 @@ export class BidsService {
         }
     }
 
+    async updateBid(user: UserSession['user'], bidId: string, body: Partial<BidDto>) {
 
+        const [selectedBid] = await this.db.select().from(bids).where(eq(bids.id, bidId)).limit(1).execute();
+
+        if (!selectedBid) {
+            throw new NotAcceptableException('Bid not found');
+        }
+
+        const [selectedJob] = await this.db.select().from(jobs).where(eq(jobs.id, selectedBid.job_reference)).limit(1).execute();
+
+        this.bidEditPolicy.checkToEdit(selectedJob, selectedBid, user);
+
+        try {
+            const [updatedBid] = await this.db.update(bids).set(body).where(eq(bids.id, bidId)).returning().execute();
+            return {
+                message: `Bid was successfully updated by ${user.name}`,
+                data: updatedBid,
+            }
+        } catch (error: any) {
+            throw new InternalServerErrorException('Failed to update bid', { "description": error instanceof Error ? error.message : String(error) });
+        }
+    }
+
+    async deleteBid(user: UserSession['user'], bidId: string) {
+        const [selectedBid] = await this.db.select().from(bids).where(eq(bids.id, bidId)).limit(1).execute();
+
+        if (!selectedBid) {
+            throw new NotAcceptableException('Bid not found');
+        }
+
+        const [selectedJob] = await this.db.select().from(jobs).where(eq(jobs.id, selectedBid.job_reference)).limit(1).execute();
+
+        this.bidEditPolicy.checkToEdit(selectedJob, selectedBid, user);
+
+        return this.db.delete(bids).where(eq(bids.id, bidId)).execute();
+    }
 }

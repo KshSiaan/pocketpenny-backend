@@ -10,7 +10,7 @@ export const BID_EDIT_WINDOW_MS = 5 * 60 * 1000;
 
 export type EditCheck =
     | { canEdit: true }
-    | { canEdit: false; code: 'NOT_FOUND' | 'NOT_OWNER' | 'WINDOW_EXPIRED'; reason: string };
+    | { canEdit: false; code: 'NOT_FOUND' | 'NOT_OWNER' | 'WINDOW_EXPIRED' | 'NOT_CAPABLE'; reason: string };
 
 @Injectable()
 export class BidEditPolicy {
@@ -38,16 +38,20 @@ export class BidEditPolicy {
         now: Date = new Date(),
     ): EditCheck {
 
-
-
         if (!bid) {
             return { canEdit: false, code: 'NOT_FOUND', reason: 'Bid not found' };
+        }
+        if (!job) {
+            return { canEdit: false, code: 'NOT_FOUND', reason: 'Job not found' };
         }
         if (user.role === 'admin') {
             return { canEdit: true };
         }
         if (bid.applicant !== user.id) {
             return { canEdit: false, code: 'NOT_OWNER', reason: 'You are not the owner of this bid' };
+        }
+        if (job.status !== 'open') {
+            return { canEdit: false, code: 'NOT_CAPABLE', reason: 'You cannot edit a bid on a job that is not open' };
         }
         if (now.getTime() - bid.createdAt.getTime() > BID_EDIT_WINDOW_MS) {
             return { canEdit: false, code: 'WINDOW_EXPIRED', reason: 'Bids can only be edited within 30 minutes of creation' };
