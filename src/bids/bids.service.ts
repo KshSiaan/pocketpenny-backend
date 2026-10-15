@@ -80,6 +80,10 @@ export class BidsService {
 
         this.bidEditPolicy.checkToEdit(selectedJob, selectedBid, user);
 
-        return this.db.delete(bids).where(eq(bids.id, bidId)).execute();
+        const [deletedBid] = await this.db.delete(bids).where(eq(bids.id, bidId)).returning().execute();
+        return {
+            message: `Bid was successfully deleted by ${user.name}`,
+            data: deletedBid,
+        };
     }
 }
