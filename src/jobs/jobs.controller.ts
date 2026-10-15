@@ -39,4 +39,9 @@ export class JobsController {
     return this.jobsService.updateJob(session.user, id, body);
   }
 
+  @Get(':id/bids')
+  findBidBasedOnJobId(@Session() session: UserSession, @Param('id') jobId: string) {
+    return this.jobsService.findBidBasedOnJobId(session.user, jobId);
+  }
+
 }

@@ -1,6 +1,6 @@
 import { Inject, Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { type Database, DRIZZLE } from '../database/database.module.js';
-import { categories, jobs } from '../db/schema.js';
+import { bids, categories, jobs } from '../db/schema.js';
 import { asc, eq } from 'drizzle-orm';
 import { UserSession } from '@thallesp/nestjs-better-auth';
 import { JobDto } from './validator.pipe.js';
@@ -91,6 +91,20 @@ export class JobsService {
         } catch (error: any) {
             throw new InternalServerErrorException('Failed to update job', { "description": error instanceof Error ? error.message : String(error) });
         }
+    }
+
+    async findBidBasedOnJobId(user: UserSession['user'], jobId: string) {
+        const [job] = await this.db.select().from(jobs).where(eq(jobs.id, jobId)).limit(1);
+
+        if (!job) {
+            throw new NotFoundException(`Job with id ${jobId} does not exist`);
+        }
+
+        if (job.author_id !== user.id || user.role !== 'admin') {
+            throw new UnauthorizedException('You are not authorized to view bids for this job');
+        }
+
+        return this.db.select().from(bids).where(eq(bids.job_reference, jobId)).orderBy(asc(bids.createdAt));
     }
 
 }

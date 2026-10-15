@@ -38,4 +38,11 @@ export class BidsController {
     return this.bidsService.deleteBid(session?.user, bidId);
   }
 
+  @Patch(':id/accept')
+  acceptBid(@Session() session: UserSession,
+    @Param('id') bidId: string
+  ) {
+    return this.bidsService.acceptBid(session?.user, bidId);
+  }
+
 }

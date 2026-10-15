@@ -44,6 +44,7 @@ export class BidEditPolicy {
         if (!job) {
             return { canEdit: false, code: 'NOT_FOUND', reason: 'Job not found' };
         }
+
         if (user.role === 'admin') {
             return { canEdit: true };
         }
@@ -55,6 +56,25 @@ export class BidEditPolicy {
         }
         if (now.getTime() - bid.createdAt.getTime() > BID_EDIT_WINDOW_MS) {
             return { canEdit: false, code: 'WINDOW_EXPIRED', reason: 'Bids can only be edited within 30 minutes of creation' };
+        }
+        return { canEdit: true };
+    }
+
+    checkToAccept(job: Job | null | undefined, bid: Bid | null | undefined, user: UserSession['user']): EditCheck {
+        if (!bid) {
+            return { canEdit: false, code: 'NOT_FOUND', reason: 'Bid not found' };
+        }
+        if (!job) {
+            return { canEdit: false, code: 'NOT_FOUND', reason: 'Job not found' };
+        }
+        if (user.id !== job.author_id) {
+            return { canEdit: false, code: 'NOT_OWNER', reason: 'You are not the owner of this job' };
+        }
+        if (job.status !== "open") {
+            return { canEdit: false, code: 'NOT_CAPABLE', reason: 'You cannot accept a bid on a job that is not open' };
+        }
+        if (bid.status !== 'pending') {
+            return { canEdit: false, code: 'NOT_CAPABLE', reason: 'You cannot accept a bid that is not pending' };
         }
         return { canEdit: true };
     }
