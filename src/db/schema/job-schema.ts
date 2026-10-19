@@ -15,7 +15,7 @@ export const jobs = pgTable(
         employee_id: text('employee_id').references(() => user.id, { onDelete: 'set null' }),
         title: text('title').notNull().unique(),
         description: text('description'),
-        status: varchar('status', { length: 20 }).notNull().default('open'),
+        status: varchar('status', { length: 20 }).notNull().default('open'), // open | canceled | in_progress | in_review | revision | completed | disputed
         amount_offered_by_author_min: integer('amount_offered_by_author_min'),
         amount_offered_by_author_max: integer('amount_offered_by_author_max'),
         amount_accepted: integer('amount_accepted'),

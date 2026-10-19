@@ -9,6 +9,7 @@ import { CategoriesModule } from './categories/categories.module.js';
 import { DatabaseModule } from './database/database.module.js';
 import { JobsModule } from './jobs/jobs.module.js';
 import { BidsModule } from './bids/bids.module.js';
+import { ProjectModule } from './project/project.module.js';
 
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
@@ -19,12 +20,6 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     // telemetry, alarms, and more — out of the box. Sign up at https://observe.nestjs.com
     AuthModule.forRoot({
       auth,
-
-      // bodyParser: {
-      //   json: { limit: "2mb" },
-      //   urlencoded: { limit: "2mb", extended: true },
-      //   rawBody: true,
-      // },
     }),
     ObserveModule.forRoot({
       appKey: 'YOUR_APP_KEY',
@@ -36,6 +31,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     DatabaseModule,
     JobsModule,
     BidsModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [AppService],

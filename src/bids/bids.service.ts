@@ -94,14 +94,13 @@ export class BidsService {
             throw new NotAcceptableException('Bid not found');
         }
 
-
         const [selectedJob] = await this.db.select().from(jobs).where(eq(jobs.id, selectedBid.job_reference)).limit(1).execute();
 
-        if (selectedJob.status !== 'open') {
-            throw new NotAcceptableException('You cannot accept a bid on a job that is not open');
-        }
+        const editCheck = this.bidEditPolicy.checkToAccept(selectedJob, selectedBid, user);
 
-        this.bidEditPolicy.checkToAccept(selectedJob, selectedBid, user);
+        if (!editCheck.canEdit) {
+            throw new NotAcceptableException(editCheck.reason);
+        }
 
         let newAgreedDate = null;
 
@@ -156,6 +155,5 @@ export class BidsService {
             });
         }
     }
-
 
 }
