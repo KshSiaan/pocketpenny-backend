@@ -9,16 +9,19 @@ export class ProjectController {
   async deliverProject(@Param('jobReference') jobReference: string, @Session() session: UserSession) {
     return this.projectService.deliverProject(jobReference, session.user);
   }
+
   @Patch(':jobReference/complete')
   async completeProject(@Param('jobReference') jobReference: string, @Session() session: UserSession) {
     return this.projectService.completeOrRevisionProject(jobReference, session.user, 'completed');
   }
+
   @Patch(':jobReference/revision')
   async requestRevision(
     @Param('jobReference') jobReference: string,
     @Session() session: UserSession,
     @Body() body: { reason: string },
   ) {
+
     const reason = body?.reason?.trim();
 
     if (!reason) {
