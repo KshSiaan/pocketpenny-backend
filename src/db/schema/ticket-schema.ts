@@ -41,20 +41,10 @@ export const ticket = pgTable(
             .$onUpdate(() => new Date()),
     },
     (t) => [
-        // FK lookups: "all tickets for this job" (also speeds up cascade deletes)
-        // + the common "tickets for this job filtered by status" in one index
         index('ticket_job_status_idx').on(t.job_reference, t.status),
-
-        // "my tickets" views
         index('ticket_raised_by_idx').on(t.raised_by),
-
-        // "tickets this admin resolved"
         index('ticket_resolved_by_idx').on(t.resolved_by),
-
-        // Admin queue: filter by status, newest first
         index('ticket_status_created_idx').on(t.status, t.createdAt.desc()),
-
-        // Enforce valid statuses at the DB level
         check(
             'ticket_status_check',
             sql`${t.status} in ('open', 'under_review', 'resolved', 'rejected')`,

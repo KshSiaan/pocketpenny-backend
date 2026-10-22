@@ -175,4 +175,9 @@ export class ProjectService {
             data: updatedJob,
         };
     }
+
+
+    createTicket(jobReference: string, user: UserSession['user'], reason: string, description?: string) {
+        // Implementation for creating a ticket would go here
+    }
 }
