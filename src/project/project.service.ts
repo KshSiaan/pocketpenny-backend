@@ -4,13 +4,14 @@ import {
     ForbiddenException,
     Inject,
     Injectable,
+    InternalServerErrorException,
     Logger,
     NotFoundException,
 } from '@nestjs/common';
 import { and, eq, inArray, lt, sql } from 'drizzle-orm';
 import { UserSession } from '@thallesp/nestjs-better-auth';
 import { type Database, DRIZZLE } from '../database/database.module.js';
-import { jobs, projectLog } from '../db/schema.js';
+import { jobs, projectLog, ticket } from '../db/schema.js';
 
 // Adjust to your real status values
 const DELIVERABLE_STATUSES = ['in_progress', 'revision_requested'];
@@ -85,9 +86,6 @@ export class ProjectService {
         const now = new Date();
         const isRevision = status === 'revision_requested';
 
-        this.logger.debug(`completeOrRevision called: status=${status}, isRevision=${isRevision}`);
-
-        // 1. Validate first (gives clear error messages)
         const [job] = await this.db
             .select({
                 author_id: jobs.author_id,
@@ -176,8 +174,60 @@ export class ProjectService {
         };
     }
 
+    async createTicket(user: UserSession['user'], jobReference: string, reason: string, description?: string) {
+        const [job] = await this.db
+            .select({
+                author_id: jobs.author_id,
+                employee_id: jobs.employee_id,
+                status: jobs.status,
+                revisionCount: jobs.revisionCount
+            })
+            .from(jobs)
+            .where(eq(jobs.id, jobReference))
+            .limit(1);
 
-    createTicket(jobReference: string, user: UserSession['user'], reason: string, description?: string) {
-        // Implementation for creating a ticket would go here
+        if (!job) throw new NotFoundException(`Job ${jobReference} not found`);
+
+        if (![job.author_id, job.employee_id].includes(user.id)) {
+            throw new ForbiddenException('You are not connected to this job');
+        }
+
+        let createdTicket: typeof ticket.$inferSelect;
+
+        try {
+            const [newTicket] = await this.db.insert(ticket).values({
+                job_reference: jobReference,
+                reason,
+                description,
+                raised_by: user.id,
+                status: "open",
+            }).returning()
+
+            createdTicket = newTicket;
+        } catch (err) {
+            return new InternalServerErrorException('Failed to create ticket');
+        }
+        let updatedJob: typeof jobs.$inferSelect;
+        try {
+            const [oldJob] = await this.db.update(jobs).set({
+                "status": "disputed"
+            }).returning()
+
+            updatedJob = oldJob;
+        } catch (err) {
+            return new InternalServerErrorException('Failed to update Job');
+        }
+
+
+        return {
+            message: `Created a ticket Successfully`,
+            data: {
+                ...updatedJob,
+                ticket: {
+                    ...createdTicket
+                }
+            }
+        }
+
     }
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Param, Patch } from '@nestjs/common';
+import { BadRequestException, Body, Controller, NotAcceptableException, Param, Patch } from '@nestjs/common';
 import { ProjectService } from './project.service.js';
 import { Session, type UserSession } from '@thallesp/nestjs-better-auth';
 @Controller('project')
@@ -42,5 +42,19 @@ export class ProjectController {
       'revision_requested',
       reason,
     );
+  }
+
+  @Patch(':jobReference/ticket')
+  async createTicket(
+    @Param('jobReference') jobReference: string,
+    @Session() session: UserSession,
+    @Body() body: { reason: string, description: string }
+  ) {
+
+    if (!body.reason || !body.description) {
+      return new NotAcceptableException("Please provide reason and description")
+    }
+
+    return this.projectService.createTicket(session.user, jobReference, body.reason, body.description)
   }
 }
